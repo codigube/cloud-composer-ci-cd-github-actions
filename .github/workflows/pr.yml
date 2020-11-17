@@ -1,0 +1,33 @@
+name: PR
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+    - 'dags/**'
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+
+jobs:
+
+  pr:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '318.0.0'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT }}
+      
+      - run: gcloud info
