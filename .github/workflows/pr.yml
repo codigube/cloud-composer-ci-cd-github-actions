@@ -22,4 +22,6 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT }}
           export_default_credentials: true
 
-      - run: gcloud projects list
+      - name: Test DAGs
+        run: |-
+          python -m unittest discover -s dags -p "*_test.py"
