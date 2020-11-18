@@ -32,20 +32,14 @@ jobs:
       - name: Test DAGs
         run: |-
           mkdir -p output/
-          pytest >> output/test_results.txt
-      - uses: actions/upload-artifact@v2
-        with:
-          name: test_results
-          path: output
-      - uses: actions/download-artifact@v2
-        with:
-          name: test_results
+          pytest | tee -a output/test_results.txt
+ 
       - name: Comment PR
         uses: machine-learning-apps/pr-comment@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: test_results/test_results.txt  
+          path: out/test_results.txt  
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@master
