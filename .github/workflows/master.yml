@@ -48,6 +48,8 @@ jobs:
           SLACK_MESSAGE: 'Job ${{ github.job }} succeeded'
 
   airflow-deploy-dev:
+    needs: airflow-merge-test
+
     runs-on: ubuntu-latest
       
     steps:
