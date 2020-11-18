@@ -1,0 +1,47 @@
+name: PR
+
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  GCP_REGION: europe-west1
+  GCP_COMPOSER_ENV_NAME: airflow-demo
+
+jobs:
+
+  pr:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+
+      - name: Install dependencies 
+        run: |-
+          python -V
+          pip install pytest
+
+      - name: Test DAGs
+        run: |-
+          mkdir -p output/
+          echo "\`\`\`bash" >> output/test_results.txt
+          pytest | tee -a output/test_results.txt
+          echo "\`\`\`" >> output/test_results.txt
+
+      - name: Comment PR
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: output/test_results.txt  
+
+      
+      
