@@ -43,5 +43,5 @@ jobs:
             --location $GCP_REGION \
             --format="get(config.dagGcsPrefix)")
 
-          echo $COMPOSER_BUCKET
+          gsutil -m rsync -r -d ./dags $COMPOSER_BUCKET
       
