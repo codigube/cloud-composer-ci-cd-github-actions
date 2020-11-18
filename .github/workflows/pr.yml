@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  GCP_REGION: europe-west1
+  GCP_COMPOSER_ENV_NAME: airflow-demo
+
 jobs:
 
   pr:
@@ -13,15 +17,6 @@ jobs:
     
       - name: Checkout
         uses: actions/checkout@v2
-      
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          version: '318.0.0'
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT }}
-          export_default_credentials: true
-
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -33,3 +28,20 @@ jobs:
           python -V
           pip install pytest
           pytest
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '318.0.0'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT }}
+          export_default_credentials: true
+
+      - name: Deploy DAGs
+        run: |-
+          COMPOSER_BUCKET=$(gcloud composer environments describe $GCP_COMPOSER_ENV_NAME \
+            --location $GCP_REGION \
+            --format="get(config.dagGcsPrefix)")
+
+          echo $COMPOSER_BUCKET
+      
