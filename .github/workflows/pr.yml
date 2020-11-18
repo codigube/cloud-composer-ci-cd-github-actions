@@ -39,7 +39,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: out/test_results.txt  
+          path: output/test_results.txt  
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@master
