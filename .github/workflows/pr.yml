@@ -32,8 +32,10 @@ jobs:
       - name: Test DAGs
         run: |-
           mkdir -p output/
+          echo "\`\`\`bash" >> output/test_results.txt
           pytest | tee -a output/test_results.txt
- 
+          echo "\`\`\`" >> output/test_results.txt
+
       - name: Comment PR
         uses: machine-learning-apps/pr-comment@master
         env:
