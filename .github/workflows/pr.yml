@@ -23,11 +23,29 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Test DAGs
+
+      - name: Install dependencies 
         run: |-
           python -V
           pip install pytest
-          pytest
+
+      - name: Test DAGs
+        run: |-
+          mkdir -p output/
+          pytest >> output/test_results.txt
+      - uses: actions/upload-artifact@v2
+        with:
+          name: test_results
+          path: output
+      - uses: actions/download-artifact@v2
+        with:
+          name: test_results
+      - name: Comment PR
+        uses: machine-learning-apps/pr-comment@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: test_results/results.txt  
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@master
