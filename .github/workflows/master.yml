@@ -11,6 +11,42 @@ env:
   SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
 jobs:
 
+  airflow-merge-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+
+      - name: Install dependencies 
+        run: |-
+          python -V
+          pip install pytest
+
+      - name: Test DAGs
+        run: |-
+          pytest
+
+      - name: slack-notification-for-failure
+        uses: codigube/github-actions-notify-slack@v3.0.0
+        if: failure() || cancelled()
+        env:
+          SLACK_COLOR: '#DF5A49'
+          SLACK_MESSAGE: 'Job ${{ github.job }} failed'
+
+      - name: slack-notification-for-success
+        uses: codigube/github-actions-notify-slack@v3.0.0
+        if: success()
+        env:
+          SLACK_MESSAGE: 'Job ${{ github.job }} succeeded'
+
   airflow-deploy-dev:
     runs-on: ubuntu-latest
       
