@@ -1,0 +1,47 @@
+name: Master
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  GCP_REGION: europe-west1
+  GCP_COMPOSER_ENV_NAME: airflow-demo
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+jobs:
+
+  airflow-deploy-dev:
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '318.0.0'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT }}
+          export_default_credentials: true
+
+      - name: Deploy DAGs
+        run: |-
+          COMPOSER_BUCKET=$(gcloud composer environments describe $GCP_COMPOSER_ENV_NAME \
+            --location $GCP_REGION \
+            --format="get(config.dagGcsPrefix)")
+
+          gsutil -m rsync -r -d ./dags $COMPOSER_BUCKET
+
+      - name: slack-notification-for-failure
+        uses: codigube/github-actions-notify-slack@v3.0.0
+        if: failure() || cancelled()
+        env:
+          SLACK_COLOR: '#DF5A49'
+          SLACK_MESSAGE: 'Job ${{ github.job }} failed'
+
+      - name: slack-notification-for-success
+        uses: codigube/github-actions-notify-slack@v3.0.0
+        if: success()
+        env:
+          SLACK_MESSAGE: 'Job ${{ github.job }} succeeded'
