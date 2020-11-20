@@ -1,6 +1,6 @@
 import unittest
 
-from modules.utils import say_hello
+from dags.utils import say_hello
 
 
 class TestUtils(unittest.TestCase):
