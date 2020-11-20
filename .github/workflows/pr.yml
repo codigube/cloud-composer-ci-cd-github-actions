@@ -28,6 +28,11 @@ jobs:
         run: |-
           python -V
           pip install pytest
+          pip install plake8
+      
+      - name: Static Analysis
+        run: |-
+            flake8 dags/
 
       - name: Test DAGs
         run: |-
