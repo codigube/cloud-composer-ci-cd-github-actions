@@ -63,7 +63,7 @@ jobs:
 
           COMPOSER_DATA_FOLDER=$(gcloud composer environments describe $GCP_COMPOSER_ENV_NAME \
             --location $GCP_REGION \
-            --format="get(config.dagGcsPrefix)")
+            --format="get(config.dagGcsPrefix)" | tr “/dags” “/data”)
 
           test_dags_path=test-dags/${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}/
 
