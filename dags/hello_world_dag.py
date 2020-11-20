@@ -7,7 +7,7 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
 # Import functoins from another file to keep DAG file cleaner
-from utils import say_hello
+from utils.py import say_hello
 
 # Use Variables
 from airflow.models import Variable
