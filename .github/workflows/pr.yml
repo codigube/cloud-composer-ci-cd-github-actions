@@ -30,15 +30,20 @@ jobs:
           pip install pytest
           pip install flake8
 
-      - name: Test DAGs
-        run: |-
           mkdir -p output/
+
+      - name: Python Static Analysis
+        run: |-
           echo "\`\`\`bash" >> output/test_results.txt
             
-          # Python Static Analysis          
           flake8 dags/ | tee -a output/test_results.txt
 
-          # Python Unit Tests
+          echo "\`\`\`" >> output/test_results.txt
+
+      - name: Python Unit Tests
+        run: |-
+          echo "\`\`\`bash" >> output/test_results.txt
+
           pytest | tee -a output/test_results.txt
 
           echo "\`\`\`" >> output/test_results.txt
