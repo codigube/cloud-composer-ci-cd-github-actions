@@ -35,8 +35,8 @@ jobs:
       - name: Python Static Analysis
         run: |-
           echo "\`\`\`bash" >> output/test_results.txt
-            
-          flake8 dags/ | tee -a output/test_results.txt
+          
+          flake8 --tee --output-file=output/test_results.txt dags/
 
           echo "\`\`\`" >> output/test_results.txt
 
