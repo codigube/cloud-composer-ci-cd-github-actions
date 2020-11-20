@@ -28,7 +28,7 @@ jobs:
         run: |-
           python -V
           pip install pytest
-          pip install plake8
+          pip install flake8
       
       - name: Static Analysis
         run: |-
