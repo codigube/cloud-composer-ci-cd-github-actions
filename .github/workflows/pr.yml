@@ -50,6 +50,7 @@ jobs:
 
       - name: Comment PR
         uses: machine-learning-apps/pr-comment@master
+        if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
