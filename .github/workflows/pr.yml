@@ -61,13 +61,17 @@ jobs:
 
           echo "\`\`\`bash" > output/test_results.txt
 
-          test_dags_path=/home/airflow/gcs/data/test-dags/${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}/
+          COMPOSER_BUCKET=$(gcloud composer environments describe $GCP_COMPOSER_ENV_NAME \
+            --location $GCP_REGION \
+            --format="get(config.dagGcsPrefix)")
 
-          gsutil -m cp ./dags $test_dags_path
+          test_dags_path=test-dags/${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}/
+
+          gsutil -m cp ./dags $COMPOSER_BUCKET/$test_dags_path
 
           gcloud composer environments run $GCP_COMPOSER_ENV_NAME \
             --location $GCP_REGION \
-            list_dags -- -sd $test_dags_path
+            list_dags -- -sd /home/airflow/gcs/data/$test_dags_path
 
           echo "\`\`\`" >> output/test_results.txt
 
