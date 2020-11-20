@@ -9,6 +9,7 @@ env:
   GCP_COMPOSER_ENV_NAME: airflow-demo
   SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
   SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+  
 jobs:
 
   airflow-merge-test:

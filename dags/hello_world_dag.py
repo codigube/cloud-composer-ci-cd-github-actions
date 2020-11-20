@@ -9,6 +9,9 @@ from airflow.operators.python_operator import PythonOperator
 # Import functoins from another file to keep DAG file cleaner
 from utils import say_hello
 
+# Use Variables
+from airflow.models import Variable
+
 # Create a DAG object with configuration
 dag = DAG('hello_dag',
           description='Hello World DAG',
@@ -28,8 +31,8 @@ task1 = PythonOperator(
 task2 = PythonOperator(
     task_id='hello_airflow_task',
     python_callable=say_hello,
-    # Pass arguments to the python method
-    op_kwargs={'name': 'Airflow'},
+    # Pass the value from Variable to the python method
+    op_kwargs={'name': Variable.get("foo")},
     dag=dag)
 
 # Define the order of tasks

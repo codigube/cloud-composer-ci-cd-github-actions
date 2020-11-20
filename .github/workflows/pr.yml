@@ -34,7 +34,7 @@ jobs:
 
       - name: Python Static Analysis
         run: |-
-          echo "\`\`\`bash" >> output/test_results.txt
+          echo "\`\`\`bash" > output/test_results.txt
           
           flake8 --tee --output-file=output/test_results.txt dags/
 
@@ -42,11 +42,29 @@ jobs:
 
       - name: Python Unit Tests
         run: |-
-          echo "\`\`\`bash" >> output/test_results.txt
+          echo "\`\`\`bash" > output/test_results.txt
 
           pytest | tee -a output/test_results.txt
 
           echo "\`\`\`" >> output/test_results.txt
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '318.0.0'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT }}
+          export_default_credentials: true
+
+      - name: Integration Tests
+        run: |-
+          test_dags_path=/home/airflow/gcs/data/test-dags/${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
+
+          gsutil -m rsync -r -d $test_dags_path
+
+          gcloud composer environments run $GCP_COMPOSER_ENV_NAME \
+            --location $GCP_REGION \
+            list_dags -- -sd $test_dags_path
 
       - name: Comment PR
         uses: machine-learning-apps/pr-comment@master
@@ -54,7 +72,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: output/test_results.txt  
-
-      
-      
+          path: output/test_results.txt
