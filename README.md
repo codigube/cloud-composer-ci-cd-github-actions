@@ -2,6 +2,16 @@
 
 Airflow CI/CD using Google Cloud Composer and GitHub Actions
 
+## Setup Google Cloud Composer
+
+### Create Composer Environment
+
+```bash
+gcloud composer environments create airflow-demo --location europe-west1
+```
+
+### Create Service Account
+
 ## TO-DO
 
 ### Custom Action for testing DAGs

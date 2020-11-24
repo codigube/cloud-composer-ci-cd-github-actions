@@ -24,24 +24,61 @@ jobs:
           python-version: '3.8'
 
 
-      - name: Install dependencies 
+      - name: Set up more dependencies 
         run: |-
           python -V
           pip install pytest
+          pip install flake8
 
-      - name: Test DAGs
-        run: |-
           mkdir -p output/
-          echo "\`\`\`bash" >> output/test_results.txt
+
+      - name: Python Static Analysis
+        run: |-
+          echo "\`\`\`bash" > output/test_results.txt
+          
+          flake8 --tee --output-file=output/test_results.txt dags/
+
+          echo "\`\`\`" >> output/test_results.txt
+
+      - name: Python Unit Tests
+        run: |-
+          echo "\`\`\`bash" > output/test_results.txt
+
           pytest | tee -a output/test_results.txt
+
+          echo "\`\`\`" >> output/test_results.txt
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '318.0.0'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT }}
+          export_default_credentials: true
+
+      - name: Integration Tests
+        run: |-
+
+          echo "\`\`\`bash" > output/test_results.txt
+
+          COMPOSER_DATA_FOLDER=$(gcloud composer environments describe $GCP_COMPOSER_ENV_NAME \
+            --location $GCP_REGION \
+            --format="get(config.dagGcsPrefix)" | sed s/"dags"/"data"/)
+
+          test_dags_path=test-dags/${GITHUB_RUN_ID}
+
+          gsutil -m cp -r ./dags $COMPOSER_DATA_FOLDER/$test_dags_path
+
+          gcloud composer environments run $GCP_COMPOSER_ENV_NAME \ 
+            --location $GCP_REGION \
+            list_dags -- -sd /home/airflow/gcs/data/$test_dags_path/
+
           echo "\`\`\`" >> output/test_results.txt
 
       - name: Comment PR
         uses: machine-learning-apps/pr-comment@master
+        if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: output/test_results.txt  
-
-      
-      
+          path: output/test_results.txt
