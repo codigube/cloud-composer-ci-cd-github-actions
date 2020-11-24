@@ -71,7 +71,7 @@ jobs:
 
           gcloud composer environments run $GCP_COMPOSER_ENV_NAME \
             --location $GCP_REGION \
-            list_dags -- -sd /home/airflow/gcs/data/$test_dags_path/
+            if list_dags -- -sd /home/airflow/gcs/data/$test_dags_path/ | grep "Error" &> /dev/null; then exit 1; else exit 0; fi
 
           echo "\`\`\`" >> output/test_results.txt
 
