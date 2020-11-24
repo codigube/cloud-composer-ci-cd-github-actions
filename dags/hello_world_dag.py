@@ -6,6 +6,9 @@ from airflow import DAG
 # Import Python Operator we will use
 from airflow.operators.python_operator import PythonOperator
 
+# Import Variables
+from airflow.models import Variable
+
 
 def say_hello(name):
     words = "Hello " + name + "!"
@@ -32,7 +35,7 @@ task2 = PythonOperator(
     task_id='hello_airflow_task',
     python_callable=say_hello,
     # Pass the value from Variable to the python method
-    op_kwargs={'name': "Airflow"},
+    op_kwargs={'name': Variable.get("foo")},
     dag=dag)
 
 # Define the order of tasks
