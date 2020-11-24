@@ -6,16 +6,16 @@ from airflow import DAG
 # Import Python Operator we will use
 from airflow.operators.python_operator import PythonOperator
 
-# Import functoins from another file to keep DAG file cleaner
-from dags.utils import say_hello
 
-# Use Variables
-from airflow.models import Variable
+def say_hello(name):
+    words = "Hello " + name + "!"
+    print(words)
+    return words
+
 
 # Create a DAG object with configuration
 dag = DAG('hello_dag',
           description='Hello World DAG',
-          chedule_interval='0 12 * * *',
           start_date=datetime(2020, 11, 10),
           catchup=False)
 
@@ -32,7 +32,7 @@ task2 = PythonOperator(
     task_id='hello_airflow_task',
     python_callable=say_hello,
     # Pass the value from Variable to the python method
-    op_kwargs={'name': Variable.get("foo")},
+    op_kwargs={'name': "Airflow"},
     dag=dag)
 
 # Define the order of tasks
