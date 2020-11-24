@@ -65,7 +65,7 @@ jobs:
             --location $GCP_REGION \
             --format="get(config.dagGcsPrefix)" | sed s/"dags"/"data"/)
 
-          test_dags_path=test-dags/${GITHUB_RUN_ID}-${GITHUB_RUN_NUMBER}
+          test_dags_path=test-dags/${GITHUB_RUN_ID}
 
           gsutil -m cp -r ./dags $COMPOSER_DATA_FOLDER/$test_dags_path
 
