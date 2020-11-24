@@ -69,9 +69,11 @@ jobs:
 
           gsutil -m cp -r ./dags $COMPOSER_DATA_FOLDER/$test_dags_path
 
-          if (gcloud composer environments run $GCP_COMPOSER_ENV_NAME \
+          gcloud composer environments run $GCP_COMPOSER_ENV_NAME \ 
             --location $GCP_REGION \
-            list_dags -- -sd /home/airflow/gcs/data/$test_dags_path/) | grep "Error" &> /dev/null; then exit 1; else exit 0; fi
+            list_dags -- -sd /home/airflow/gcs/data/$test_dags_path/ >> output/test_results.txt
+
+          if cat output/test_results.txt | grep "Error" &> /dev/null; then exit 1; else exit 0; fi
 
           echo "\`\`\`" >> output/test_results.txt
 
