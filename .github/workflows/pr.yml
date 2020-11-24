@@ -73,8 +73,6 @@ jobs:
             --location $GCP_REGION \
             list_dags -- -sd /home/airflow/gcs/data/$test_dags_path/) >> output/test_results.txt
 
-          if cat output/test_results.txt | grep "Error" &> /dev/null; then exit 1; else exit 0; fi
-
           echo "\`\`\`" >> output/test_results.txt
 
       - name: Comment PR
